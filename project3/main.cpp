@@ -129,11 +129,11 @@ int mainMenu(sf::RenderWindow& window, sf::Font& fnt)
 
 		sf::Vector2u screenSize = window.getSize(); // getting size of window again in case of a resize
 
-													/* The following proccess will be used repeatedly in order to set the origin
-													of certain elements to the center of their bounds. Essentially you create
-													a rect with the bounds of the object whose origin you want centered.
-													You can use those values to offset  the origin of said object.
-													*/
+		/* The following proccess will be used repeatedly in order to set the origin
+		of certain elements to the center of their bounds. Essentially you create
+		a rect with the bounds of the object whose origin you want centered.
+		You can use those values to offset  the origin of said object.
+		*/
 
 		sf::FloatRect menuRect(sf::Vector2f(screenSize.x - screenSize.x,
 			screenSize.y - (2 * screenSize.y) / 3), sf::Vector2f(screenSize.x, screenSize.y / 3));
