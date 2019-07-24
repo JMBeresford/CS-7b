@@ -1,5 +1,5 @@
 /* @Author - John Beresford
-* @Assignment - SFML Complex Numbers and Basins of Attraction
+*  @Assignment - SFML Complex Numbers and Basins of Attraction
 */
 
 #include <SFML/Graphics.hpp>
