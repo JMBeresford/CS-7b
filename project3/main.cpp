@@ -1109,7 +1109,7 @@ void basins(sf::RenderWindow& window, sf::Font fnt, sf::Vector2f topLeft, sf::Ve
 	int gradient; // Will be used for when the calculation function returns a non-0, non-100 value
 
 				  // The following values will be able to be user-defined if given time to implement that
-	double scale = 10.0, // pixel density of the below rectangle shape for drawing the basins
+	double scale = 1.0, // pixel density of the below rectangle shape for drawing the basins
 		minReal = topLeft.x, // values to display on 'graph'
 		maxImag = topLeft.y,
 		maxReal = botRight.x,
@@ -1139,8 +1139,8 @@ void basins(sf::RenderWindow& window, sf::Font fnt, sf::Vector2f topLeft, sf::Ve
 	{
 		windowSize = sf::Vector2f(window.getSize().x, window.getSize().y);
 		mouseLocation2 = sf::Vector2f(sf::Mouse::getPosition(window));
-		zoomRect.setSize(sf::Vector2f(-(mouseLocation1.x - mouseLocation2.x),
-										-(mouseLocation1.y - mouseLocation2.y)));
+		zoomRect.setSize(sf::Vector2f((-(mouseLocation1.x - mouseLocation2.x)/int(windowSize.x))*windowSize.x,
+										(-(mouseLocation1.y - mouseLocation2.y)/int(windowSize.y))*windowSize.y));
 		
 		zoomRect.setPosition(mouseLocation1);
 
@@ -1168,17 +1168,26 @@ void basins(sf::RenderWindow& window, sf::Font fnt, sf::Vector2f topLeft, sf::Ve
 					mouseLocation2.x = minReal + (graphSize * scale / windowSize.x) * mouseLocation2.x/scale;
 					mouseLocation2.y = maxImag - (graphSize * scale / windowSize.y) * mouseLocation2.y/scale;
 					
-					if (mouseLocation1.x < mouseLocation2.x && mouseLocation1.y > mouseLocation2.y)	// Depending on orientation of the drawn rect,
-						basins(window, fnt, sf::Vector2f(mouseLocation1), sf::Vector2f(mouseLocation2));	// we call the function with the new coordinates
+					if (mouseLocation1.x < mouseLocation2.x)	// Depending on orientation of the drawn rect,
+					{
+						if (mouseLocation1.y > mouseLocation2.y)
+							basins(window, fnt, sf::Vector2f(mouseLocation1.x,mouseLocation2.y), sf::Vector2f(mouseLocation2.x,mouseLocation1.y));	// we call the function with the new coordinates
+						else
+							basins(window, fnt, sf::Vector2f(mouseLocation1), sf::Vector2f(mouseLocation2));
+					}
 					else
-						basins(window, fnt, sf::Vector2f(mouseLocation2), sf::Vector2f(mouseLocation1));
-
+					{
+						if (mouseLocation1.y > mouseLocation2.y)
+							basins(window, fnt, sf::Vector2f(mouseLocation2), sf::Vector2f(mouseLocation1));
+						else
+							basins(window, fnt, sf::Vector2f(mouseLocation2.x,mouseLocation1.y), sf::Vector2f(mouseLocation1.x,mouseLocation2.y));
+					}
 					zoomRect.setOutlineColor(sf::Color::Transparent);
 				}
 			}
 		}
 
-		if (widthPen <= windowSize.x && heightPen <= windowSize.y)
+		while (widthPen <= windowSize.x && heightPen <= windowSize.y)
 		{
 			if (widthPen >= windowSize.x) // Checks for end of working line
 			{
@@ -1209,10 +1218,11 @@ void basins(sf::RenderWindow& window, sf::Font fnt, sf::Vector2f topLeft, sf::Ve
 			input.real(input.real() + graphSize * scale / windowSize.x);
 			widthPen += scale;
 			std::cout << "Calculated " << input << std::endl;
+			canvas.draw(ink);
 		}
 
 
-		canvas.draw(ink); // Draws the rectangle to an offscreen texture
+		//canvas.draw(ink); // Draws the rectangle to an offscreen texture
 		canvas.display(); // Displays said rectangle (off-screen)
 
 		window.clear(); // Necessary action thus the canvas shenanigans
@@ -1230,16 +1240,16 @@ int babylonianAlgorithm(Complx c)
 	Complx offset, temp(c.real(), c.imag());
 	int behaviour = 0;
 
-	while ((offset - temp).abs() > 0.000001)
+	while ((offset - temp).abs() > 0.001)
 	{
 		++behaviour;
 		offset = temp;
 		temp = temp * temp + c;
 
-		if ((offset - temp).abs() > 1000)
+		if ((offset - temp).abs() > 100)
 			return 0;
 
-		if (behaviour > 1000)
+		if (behaviour > 100)
 			return 100;
 	}
 
